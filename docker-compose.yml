@@ -1,0 +1,49 @@
+services:
+  app:
+    image: ghcr.io/pelican-dev/panel:main
+    environment:
+      - APP_ENV=production
+      - APP_URL=http://panel.example.com
+      - ADMIN_EMAIL=admin@example.com
+      - APP_TIMEZONE=Europe/Berlin
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_STORE=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=pelican
+      - DB_USERNAME=pelican
+      - DB_PASSWORD=pelican
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=mailhog
+      - MAIL_PORT=1025
+    volumes:
+      - ./data:/pelican-data
+    ports:
+      - 80:80
+      - 443:443
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - ./data/redis:/data
+
+  db:
+    image: mariadb:10.5
+    environment:
+      - MYSQL_DATABASE=pelican
+      - MYSQL_USER=pelican
+      - MYSQL_PASSWORD=pelican
+      - MYSQL_ROOT_PASSWORD=pelican
+    volumes:
+      - ./data/db:/var/lib/mysql
+      - ./data/logs:/var/log/mysql
+    ports:
+      - 3306:3306
+      
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - 8025:8025
